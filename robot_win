@@ -1,0 +1,79 @@
+import curses
+import RPi.GPIO as GPIO
+
+GPIO.setwarnings(False)
+
+screen = curses.initscr()
+curses.noecho()
+curses.cbreak()
+screen.keypad(True)
+
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(7 , GPIO.OUT)
+GPIO.setup(11 , GPIO.OUT)
+GPIO.setup(8 , GPIO.OUT)
+GPIO.setup(12 , GPIO.OUT)
+GPIO.setup(33, GPIO.OUT)
+GPIO.setup(35, GPIO.OUT)
+r = GPIO.PWM(33, 100)
+l = GPIO.PWM(35, 100)
+r.start(0)
+l.start(0)
+previouse_char = 32
+char = 32
+speed = 0
+try:
+    while True:
+        char = screen.getch()
+        if char >= 258 and char <= 261:
+            if previouse_char != char:
+                speed = 0
+            previouse_char = char
+        if char == 263:
+            break
+      
+        if char == 27:
+            speed+=20
+        elif char == 268:
+            speed-=20
+            
+        if(speed<=0):
+            speed=0
+        elif(speed>=100):
+            speed=100
+       
+        r.ChangeDutyCycle(speed)        
+        l.ChangeDutyCycle(speed)
+        
+        if char == 259:
+            GPIO.output(7, True)
+            GPIO.output(11, True)
+            GPIO.output(8, False)
+            GPIO.output(12, False)
+        elif char == 258:
+            GPIO.output(7, False)
+            GPIO.output(11, False)
+            GPIO.output(8, True)
+            GPIO.output(12, True)
+        elif char == 260:
+            GPIO.output(7, True)
+            GPIO.output(11, False)
+            GPIO.output(8, False)
+            GPIO.output(12, True)
+        elif char == 261:
+            GPIO.output(7, False)
+            GPIO.output(11, True)
+            GPIO.output(8, True)
+            GPIO.output(12, False)
+        elif char == 32:
+            GPIO.output(7, True)
+            GPIO.output(11, True)
+            GPIO.output(8, True)
+            GPIO.output(12, True)
+            speed = 0
+finally:
+    curses.nocbreak()
+    screen.keypad(0)
+    curses.echo()
+    curses.endwin()
+    GPIO.cleanup()
