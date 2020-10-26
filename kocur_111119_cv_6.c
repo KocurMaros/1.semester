@@ -16,7 +16,7 @@ void vypis(int cisla[],int dlzka){
         printf(" ");
         j++;
         if(j==10)
-            printf("\n",j=1);
+            printf("\n",j=0);
     }
 }
 int najdlhsie_opakovanie(char x[],int pocet,char *znak){
