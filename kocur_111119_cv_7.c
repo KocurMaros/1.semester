@@ -6,9 +6,11 @@ MAROS KOCUR, 111119, cv.7
 char Nahrady(char n[]){
     int length = strlen(n);
     for(int i=0;i<length;i++){
-        if(n[i]=='*')
+        if(n[i]=='*'){
             for(int j=i;j<length;j++)
                 n[j]=n[j+1];
+            i--;
+        }
         if(n[i]=='.'){
             for(int j=length;j>i;j--)
                 n[j+2]=n[j];
