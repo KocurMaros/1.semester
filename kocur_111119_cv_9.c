@@ -23,15 +23,12 @@ int SumTab(int **pole, int riadky, int stlpce){
 }
 int **nacitaj(int *riadky,int *stlpce){
     int **pole;
-    int x,y;
     FILE *fr;
     if((fr=fopen("vstup.txt", "r"))!=NULL){
-        fscanf(fr,"%d %d",&x,&y);
-        *riadky=x;
-        *stlpce=y;
-        pole = create(x,y);
-        for(int i=0;i<x;i++)
-            for(int j=0;j<y;j++)
+        fscanf(fr,"%d %d",&(*riadky),&(*stlpce));
+        pole = create(*riadky,*stlpce);
+        for(int i=0;i<*riadky;i++)
+            for(int j=0;j<*stlpce;j++)
                 fscanf(fr, "%d", *(pole+i)+j);
     }
     fclose(fr);
