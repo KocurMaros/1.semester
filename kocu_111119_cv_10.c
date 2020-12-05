@@ -19,9 +19,7 @@ CLOVEK *nacitajPole(int *pocet){
         meno=(CLOVEK*)malloc(*pocet*sizeof(CLOVEK));
         for(i=0; i<*pocet; i++){
             j=0;
-            while((c=fgetc(fr))!='\n')
-            {
-                printf("%c",c);
+            while((c=fgetc(fr))!='\n'){
                 meno[i].meno[j]=c;
                 j++;
             }
@@ -79,7 +77,7 @@ void vypisSpajany(CLOVEK*s){
     CLOVEK *ziak=s;
     printf("Spajany zoznam\n");
     while(ziak!=NULL){
-        printf("Meno: %s, Rocnik: %d.\n", ziak->meno, ziak->rocnik);
+        printf("Meno: %s, Rocnik: %d\n", ziak->meno, ziak->rocnik);
         ziak=ziak->next;
     }
 }
