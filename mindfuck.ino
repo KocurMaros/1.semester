@@ -64,14 +64,14 @@ char *play_game(int c, char **hist){
         if(pos > c)
           pos=0;
           Serial.println(pos);
-//        render_history(hist, c);
+        render_history(hist, pos);
         }
       else if(digitalRead(4)){
          pos -= 1;
           if(pos < 0)
             pos = c;
             Serial.println(pos);
-//         render_history(hist, c);
+         render_history(hist, pos);
       }
       code[0] += 1;
     }
@@ -112,27 +112,31 @@ void turn_off_leds(){
     digitalWrite(i,LOW);
   }
 }
-//char **render_history(char **history,int cyklus){
-//  char code[4];
-//  for(int i=0; i < 4; i++){
-//    code[i] = history[cyklus][i];
-//    Serial.print(history[cyklus][i]);
-//  }    
-//  Serial.println("-----");
-//  lcd.setCursor(0, 0);
-//  lcd.print(code);
-//}
+char **render_history(char **history,int cyklus){
+  char code[5];
+  code[4] = '\0';
+  for(int i=0; i < 4; i++){
+    code[i] = history[cyklus][i];
+  } 
+  lcd.setCursor(0, 0);
+  lcd.print(code);
+}
 void loop(){
     int podm = 0;
     const int pocet_pokusov = 10;
     char **history = NULL;
     char *secret = NULL;
     char *guess = NULL;
+    history  = (char **)malloc(pocet_pokusov * sizeof(char *)); //kvoli vyjebanemu vypisu z minuleho nahravania 
+    for(int i = 0;i < pocet_pokusov;i++)
+      history[i] = (char *)malloc(4 * sizeof(char));
+    for(int i = 0; i < pocet_pokusov;i++)
+      free(history[i]);
+    free(history);
+    history  = (char **)malloc(pocet_pokusov * sizeof(char *));
+    for(int i = 0;i < pocet_pokusov;i++)
+      history[i] = (char *)malloc(4 * sizeof(char));
     
-//    history  = (char **)malloc(pocet_pokusov * sizeof(char *));
-//    for(int i = 0;i < pocet_pokusov;i++)
-//      history[i] = (char *)malloc(4 * sizeof(char));
-//    
     int a = 0, b = 0, c = 0;
     
     secret = generate_code(false, 4);
@@ -140,21 +144,17 @@ void loop(){
       guess = play_game(c, history);
       podm = get_score(secret, guess);
       
-//      for(int i=0; i < 4; i++){
-//        history[c][i] = guess[i];    
-//      }
-//      
-      
-      if(podm == 0)
+      for(int i=0; i < 4; i++)
+        history[c][i] = guess[i];    
+      if(podm == 4)
         break; 
         
       }
-//    for(int i = 0; i < pocet_pokusov;i++)
-//      free(history[i]);
-//    free(history);
+    for(int i = 0; i < pocet_pokusov;i++)
+      free(history[i]);
+    free(history);
     free(secret);
     free(guess);
-    
     delay(1000);
 }
 int get_score(char *secret, char *guess){
@@ -177,5 +177,5 @@ int get_score(char *secret, char *guess){
     turn_off_leds();
     render_leds(peg_a,peg_b);
     delay(300);
-    return peg_b;
+    return peg_a;
 }
