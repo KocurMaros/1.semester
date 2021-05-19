@@ -61,6 +61,7 @@ char *play_game(int c, char **hist){
     if(digitalRead(2)){
       if(digitalRead(3)){
         pos += 1;
+        code[0] -= 1;
         if(pos > c)
           pos=0;
           Serial.println(pos);
@@ -68,6 +69,7 @@ char *play_game(int c, char **hist){
         }
       else if(digitalRead(4)){
          pos -= 1;
+         code[0] -= 1;
           if(pos < 0)
             pos = c;
             Serial.println(pos);
@@ -121,6 +123,27 @@ char **render_history(char **history,int cyklus){
   lcd.setCursor(0, 0);
   lcd.print(code);
 }
+void win(){
+  lcd.setCursor(0, 0);
+  lcd.print("Congrats");
+  lcd.setCursor(0, 1);
+  lcd.print("You win");
+  for(int j = 0; j<3 ;j++){ 
+    for(int i = 6;i<=13;i++){
+      digitalWrite(i,HIGH);
+      if(i == 6)
+        digitalWrite(13,LOW);
+      else
+        digitalWrite(i-1,LOW);
+      delay(150);
+    }
+  }
+  digitalWrite(13,LOW);
+  lcd.setCursor(0, 0);
+  lcd.print("         ");
+  lcd.setCursor(0, 1);
+  lcd.print("       ");
+}
 void loop(){
     int podm = 0;
     const int pocet_pokusov = 10;
@@ -146,15 +169,16 @@ void loop(){
       
       for(int i=0; i < 4; i++)
         history[c][i] = guess[i];    
-      if(podm == 4)
+      if(podm == 4 || peg_a == 4){
+        win();
         break; 
-        
-      }
+        }
+    }
     for(int i = 0; i < pocet_pokusov;i++)
       free(history[i]);
     free(history);
     free(secret);
-    free(guess);
+    free(guess); 
     delay(1000);
 }
 int get_score(char *secret, char *guess){
@@ -169,12 +193,13 @@ int get_score(char *secret, char *guess){
             }
           else{
             peg_b+=1;
-            i++;
           }
         }
       }
     }
     turn_off_leds();
+    Serial.println(peg_a);
+    Serial.println(peg_b);
     render_leds(peg_a,peg_b);
     delay(300);
     return peg_a;
